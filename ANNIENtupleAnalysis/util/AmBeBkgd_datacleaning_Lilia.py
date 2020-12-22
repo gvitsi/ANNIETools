@@ -28,7 +28,7 @@ BKG_DIR = "../Data/V3_5PE100ns/BkgPos0Data/"
 #PEPERMEV = 12.
 #expoPFlat= lambda x,C1,tau,mu,B: C1*np.exp(-(x-mu)/tau) + B
 #mypoisson = lambda x,mu: (mu**x)*np.exp(-mu)/scm.factorial(x)
-
+'''
 def GetDataFrame(mytreename,mybranches,filelist):
     RProcessor = rp.ROOTProcessor(treename=mytreename)
     for f1 in filelist:
@@ -36,6 +36,7 @@ def GetDataFrame(mytreename,mybranches,filelist):
     data = RProcessor.getProcessedData()
     df = pd.DataFrame(data)
     return df
+'''
 '''
 def EventSelectionLosses(df,df_trig):
     print("TOTAL NUMBER OF EVENT TIME TANKS SET: " + str(len(set(df_trig['eventTimeTank']))))
@@ -69,9 +70,9 @@ def PlotDemo(Sdf,Bdf,Sdf_trig,Bdf_trig):
     print(Bdf.head())
     print("Bdf.shape: ", Bdf.shape)
     print("All columns are: ", Bdf.columns.values.tolist())
-    Bdf.to_csv("vars_DNN_Bkgd.csv",  index=False,float_format = '%.3f')
+    #Bdf.to_csv("vars_DNN_Bkgd.csv",  index=False,float_format = '%.3f')
 #    print(type(Bdf.hitDetID))
-'''
+
     #---- My Plots:
     Bdf_prompt=Bdf.loc[Bdf['clusterTime']<2000].reset_index(drop=True) #prompt events
     plt.hist(Bdf_prompt['clusterTime'],bins=100,range=(0,2000))
@@ -230,7 +231,7 @@ def PlotDemo(Sdf,Bdf,Sdf_trig,Bdf_trig):
     ranges = {'xbins': 100, 'ybins':100, 'xrange':[0,100],'yrange':[0,100]}
     abp.Make2DHist(Bdf_del_lowCB,'clusterPE','clusterMaxPE',labels,ranges)
     plt.show()
-'''
+
 
 if __name__=='__main__':
     slist = glob.glob(SIGNAL_DIR+"*.ntuple.root")

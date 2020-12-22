@@ -55,7 +55,7 @@ def PlotDemo(Sdf,Bdf,Sdf_trig,Bdf_trig):
    print("All columns are: ", Bdf.columns.values.tolist())
    #Bdf.to_csv("vars_DNN_Bkgd.csv",  index=False,float_format = '%.3f')
    #print(type(Bdf.hitDetID))
-    
+   '''
    data = pd.concat((Sdf,Bdf[:27645]))
    print("----- Signal+Bkgd------")
    #data['hitDetID'].to_csv("testing.csv")
@@ -74,7 +74,8 @@ def PlotDemo(Sdf,Bdf,Sdf_trig,Bdf_trig):
    print("data.shape: ", data.shape)
    data.to_csv("labels_DNN_Signal_Bkgd.csv",  index=False,float_format = '%.3f', sep=",")   
    data.drop(['label'], axis=1).to_csv("vars_DNN_Signal_Bkgd.csv",header=False,index=False,float_format = '%.3f', sep=",")
-
+   '''
+   '''
    #-------- selecting only prompt events as signal: --------#
    print("Selecting only prompt events (t<2us) as signal")
    Sdf_prompt=Sdf.loc[Sdf['clusterTime']<2000].reset_index(drop=True)
@@ -90,6 +91,23 @@ def PlotDemo(Sdf,Bdf,Sdf_trig,Bdf_trig):
    print("data2.shape: ", data2.shape)
    data2.to_csv("labels_DNN_Signal_Bkgd_prompt.csv",  index=False,float_format = '%.3f', sep=",")
    data2.drop(['label'], axis=1).to_csv("vars_DNN_Signal_Bkgd_prompt.csv",header=False,index=False,float_format = '%.3f', sep=",")
+   '''
+   #-------- selecting only delayed events as signal & Bkgd: --------#
+   print("Selecting only delayed events (t>=2us) as signal+Bkgd")
+   Sdf_del=Sdf.loc[Sdf['clusterTime']>=2000].reset_index(drop=True)
+   print(Sdf_del.head())
+   print("Sdf_del.shape: ", Sdf_del.shape)
+   Bdf_del=Bdf.loc[Bdf['clusterTime']>=2000].reset_index(drop=True)
+   data3 = pd.concat((Sdf_del,Bdf_del[:24075]))
+   data3['hitDetID'] = [','.join(str(y) for y in x) for x in data3['hitDetID']]
+   print("data3.shape: ", data3.shape)
+
+   #randomly shuffle the data
+   data3 = shuffle(data3, random_state=0)
+   print("after shuffling: ", data3.head())
+   print("data3.shape: ", data3.shape)
+   data3.to_csv("labels_DNN_Signal_Bkgd_del.csv",  index=False,float_format = '%.3f', sep=",")
+   data3.drop(['label'], axis=1).to_csv("vars_DNN_Signal_Bkgd_del.csv",header=False,index=False,float_format = '%.3f', sep=",")
 
    '''
    Sdf['label'] = '1'
@@ -97,6 +115,47 @@ def PlotDemo(Sdf,Bdf,Sdf_trig,Bdf_trig):
    labels = pd.concat((Sdf,Bdf))
    assert(data.shape[0]==labels.shape[0])
    labels.to_csv("labels_DNN_Signal_Bkgd.csv",  index=False,float_format = '%.3f', sep=",")
+   '''
+   #plots to double-check:
+   #--- CB to cluster Time:   
+   '''
+   labels = {'title': 'Charge balance parameters in time window \n (Beam data, $t_{c}>=2 \, \mu s$)', 
+            'xlabel': 'Cluster time (ns)', 'ylabel': 'Charge balance'}
+   ranges = {'xbins': 58, 'ybins':50, 'xrange':[2000,60000],'yrange':[0,1]}
+   abp.Make2DHist(Sdf_del,'clusterTime','clusterChargeBalance',labels,ranges)
+   plt.show()
+   '''
+   '''
+   labels = {'title': 'Charge balance parameters in time window \n (Beam data, $t_{c}<2 \, \mu s$)',
+             'xlabel': 'Cluster time (ns)', 'ylabel': 'Charge balance'}
+   ranges = {'xbins': 20, 'ybins':50, 'xrange':[0,2000],'yrange':[0,1]}
+   abp.Make2DHist(Sdf_prompt,'clusterTime','clusterChargeBalance',labels,ranges)
+   plt.show()
+   labels = {'title': 'Charge balance parameters in time window \n (Bkgd data)',
+             'xlabel': 'Cluster time (ns)', 'ylabel': 'Charge balance'}
+   ranges = {'xbins': 20, 'ybins':50, 'xrange':[0,20000],'yrange':[0,1]}
+   abp.Make2DHist(Bdf[:3570],'clusterTime','clusterChargeBalance',labels,ranges)
+   plt.show()
+   '''
+   #--- CB to clusterPE:
+   ''' 
+   labels = {'title': 'Charge balance parameters in time window \n (Beam data, $t_{c}>=2 \, \mu s$)',
+             'xlabel': 'Cluster PE', 'ylabel': 'Charge balance'}
+   ranges = {'xbins': 58, 'ybins':50, 'xrange':[0,500],'yrange':[0,1]}
+   abp.Make2DHist(Sdf_del,'clusterPE','clusterChargeBalance',labels,ranges)
+   plt.show()
+   '''
+   '''
+   labels = {'title': 'Charge balance parameters in time window \n (Beam data, $t_{c}<2 \, \mu s$)',
+             'xlabel': 'Cluster PE', 'ylabel': 'Charge balance'}
+   ranges = {'xbins': 20, 'ybins':50, 'xrange':[0,500],'yrange':[0,1]}
+   abp.Make2DHist(Sdf_prompt,'clusterPE','clusterChargeBalance',labels,ranges)
+   plt.show()
+   labels = {'title': 'Charge balance parameters in time window \n (Bkgd data)',
+             'xlabel': 'Cluster PE', 'ylabel': 'Charge balance'}
+   ranges = {'xbins': 20, 'ybins':50, 'xrange':[0,500],'yrange':[0,1]}
+   abp.Make2DHist(Bdf[:3570],'clusterPE','clusterChargeBalance',labels,ranges)
+   plt.show()
    '''
 if __name__=='__main__':
     slist = glob.glob(SIGNAL_DIR+"*.ntuple.root")
