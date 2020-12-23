@@ -75,7 +75,7 @@ def PlotDemo(Sdf,Bdf,Sdf_trig,Bdf_trig):
    data.to_csv("labels_DNN_Signal_Bkgd.csv",  index=False,float_format = '%.3f', sep=",")   
    data.drop(['label'], axis=1).to_csv("vars_DNN_Signal_Bkgd.csv",header=False,index=False,float_format = '%.3f', sep=",")
    '''
-   '''
+   
    #-------- selecting only prompt events as signal: --------#
    print("Selecting only prompt events (t<2us) as signal")
    Sdf_prompt=Sdf.loc[Sdf['clusterTime']<2000].reset_index(drop=True)
@@ -91,7 +91,7 @@ def PlotDemo(Sdf,Bdf,Sdf_trig,Bdf_trig):
    print("data2.shape: ", data2.shape)
    data2.to_csv("labels_DNN_Signal_Bkgd_prompt.csv",  index=False,float_format = '%.3f', sep=",")
    data2.drop(['label'], axis=1).to_csv("vars_DNN_Signal_Bkgd_prompt.csv",header=False,index=False,float_format = '%.3f', sep=",")
-   '''
+   
    #-------- selecting only delayed events as signal & Bkgd: --------#
    print("Selecting only delayed events (t>=2us) as signal+Bkgd")
    Sdf_del=Sdf.loc[Sdf['clusterTime']>=2000].reset_index(drop=True)
