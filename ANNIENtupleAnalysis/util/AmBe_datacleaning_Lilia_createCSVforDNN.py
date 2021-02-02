@@ -92,6 +92,23 @@ def PlotDemo(Sdf,Bdf,Sdf_trig,Bdf_trig):
    data2.to_csv("labels_DNN_Signal_Bkgd_promptNEW.csv",  index=False,float_format = '%.3f', sep=",")
    data2.drop(['label'], axis=1).to_csv("vars_DNN_Signal_Bkgd_promptNEW.csv",header=False,index=False,float_format = '%.3f', sep=",")
 
+   #-------- selecting only delayed events as signal: --------#
+   print("Selecting only delayed events (t>=2us) as signal")
+   Sdf_del=Sdf.loc[Sdf['clusterTime']>=2000].reset_index(drop=True)
+   print(Sdf_del.head())
+   print("Sdf_del.shape: ", Sdf_del.shape)
+   data3 = pd.concat((Sdf_del,Bdf[:24075]))
+   data3['hitDetID'] = [','.join(str(y) for y in x) for x in data3['hitDetID']]
+   data3['hitPE'] = [','.join(str(y) for y in x) for x in data3['hitPE']]
+   print("data3.shape: ", data3.shape)
+
+   #randomly shuffle the data
+   data3 = shuffle(data3, random_state=0)
+   print("after shuffling: ", data3.head())
+   print("data3.shape: ", data3.shape)
+   data3.to_csv("labels_DNN_Signal_Bkgd_delNEW.csv",  index=False,float_format = '%.3f', sep=",")
+   data3.drop(['label'], axis=1).to_csv("vars_DNN_Signal_Bkgd_delNEW.csv",header=False,index=False,float_format = '%.3f', sep=",")
+
    '''
    Sdf['label'] = '1'
    Bdf['label'] = '0'
