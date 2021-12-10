@@ -46,7 +46,7 @@ def BeamPlotDemo(PositionDict,MCdf):
     Sdf = PositionDict["Beam"][0]
     Sdf_trig = PositionDict["Beam"][1]
     Sdf_mrd = PositionDict["Beam"][2]
-    print("Sdf ",Sdf.head())
+    print("Sdf ",Sdf.head()," ",Sdf.shape)
     print("All columns are: ", Sdf.columns.values.tolist())
 
     Sdf = Sdf.loc[Sdf["eventTimeTank"]>-9].reset_index(drop=True)
