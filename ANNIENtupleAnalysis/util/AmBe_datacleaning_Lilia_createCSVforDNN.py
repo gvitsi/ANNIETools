@@ -23,8 +23,10 @@ import pylab
 pylab.rcParams['figure.figsize'] = 10, 7.6
 
 
-SIGNAL_DIR = "../Data/V3_5PE100ns/Pos0Data/"
-BKG_DIR = "../Data/V3_5PE100ns/BkgPos0Data/"
+#SIGNAL_DIR = "../Data/V3_5PE100ns/Pos0Data/"
+#BKG_DIR = "../Data/V3_5PE100ns/BkgPos0Data/"
+SIGNAL_DIR = "/Users/edrakopo/work/ANNIETools_ntuples/ANNIETools/ANNIENtupleAnalysis/Data/V3_5PE100ns/Pos0Data/"
+BKG_DIR = "/Users/edrakopo/work/ANNIETools_ntuples/ANNIETools/ANNIENtupleAnalysis/Data/V3_5PE100ns/BkgPos0Data/"
 
 #PEPERMEV = 12.
 #expoPFlat= lambda x,C1,tau,mu,B: C1*np.exp(-(x-mu)/tau) + B
