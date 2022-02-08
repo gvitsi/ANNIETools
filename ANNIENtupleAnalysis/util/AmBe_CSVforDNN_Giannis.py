@@ -41,8 +41,11 @@ def GetDataFrame(mytreename,mybranches,filelist):
     data = RProcessor.getProcessedData()
     df = pd.DataFrame(data)
     return df
+    
+def noisypmt(Sdf,Bdf) #,Sdf_trig,Bdf_trig):
+    
 
-def PlotDemo(Sdf,Bdf,Sdf_trig,Bdf_trig): 
+def PlotDemo(Sdf,Bdf) #,Sdf_trig,Bdf_trig): 
     
     Sdf['label'] = '1'
     print("----- Signal------")
@@ -61,7 +64,7 @@ def PlotDemo(Sdf,Bdf,Sdf_trig,Bdf_trig):
     Bdf.to_csv("vars_DNN_Bkgd.csv",  index=False,float_format = '%.3f')
     #print(type(Bdf.hitDetID))
     
-    data = pd.concat((Sdf,Bdf[:27645]))
+    data = pd.concat((Sdf,Bdf)
     print("----- Signal+Bkgd------")
     #data['hitDetID'].to_csv("testing.csv")
 
@@ -83,9 +86,10 @@ def PlotDemo(Sdf,Bdf,Sdf_trig,Bdf_trig):
     #-------- selecting only prompt events as signal: --------#
     print("Selecting only prompt events (t<2us) as signal")
     Sdf_prompt=Sdf.loc[Sdf['clusterTime']<2000].reset_index(drop=True)
+    Bdf_prompt=Bdf.loc[Bdf['clusterTime']<2000].reset_index(drop=True)
     print(Sdf_prompt.head())
     print("Sdf_prompt.shape: ", Sdf_prompt.shape)
-    data2 = pd.concat((Sdf_prompt,Bdf[:3570]))
+    data2 = pd.concat((Sdf_prompt,Bdf_prompt)
     data2['hitDetID'] = [','.join(str(y) for y in x) for x in data2['hitDetID']]
     data2['hitPE'] = [','.join(str(y) for y in x) for x in data2['hitPE']]
     print("data2.shape: ", data2.shape)
@@ -100,9 +104,11 @@ def PlotDemo(Sdf,Bdf,Sdf_trig,Bdf_trig):
     #-------- selecting only delayed events as signal: --------#
     print("Selecting only delayed events (t>=2us) as signal")
     Sdf_del=Sdf.loc[Sdf['clusterTime']>=2000].reset_index(drop=True)
+    Bdf_del=Bdf.loc[Bdf['clusterTime']>=2000].reset_index(drop=True)
     print(Sdf_del.head())
     print("Sdf_del.shape: ", Sdf_del.shape)
-    data3 = pd.concat((Sdf_del,Bdf[:24075]))
+    data3 = pd.concat((Sdf_del,Bdf_del)
+    data3.to_csv("labels_DNN_Signal_Bkgd_delNEW_TEST_for_pmt.csv",  index=False,float_format = '%.3f', sep=",")
     data3['hitDetID'] = [','.join(str(y) for y in x) for x in data3['hitDetID']]
     data3['hitPE'] = [','.join(str(y) for y in x) for x in data3['hitPE']]
     print("data3.shape: ", data3.shape)
@@ -125,10 +131,10 @@ if __name__=='__main__':
     slist = glob.glob(SIGNAL_DIR+"*.ntuple.root")
     blist = glob.glob(BKG_DIR+"*.ntuple.root")
 
-    livetime_estimate = es.EstimateLivetime(slist)
-    print("SIGNAL LIVETIME ESTIMATE IN SECONDS IS: " + str(livetime_estimate))
-    livetime_estimate = es.EstimateLivetime(blist)
-    print("BKG LIVETIME ESTIMATE IN SECONDS IS: " + str(livetime_estimate))
+    #livetime_estimate = es.EstimateLivetime(slist)
+    #print("SIGNAL LIVETIME ESTIMATE IN SECONDS IS: " + str(livetime_estimate))
+    #livetime_estimate = es.EstimateLivetime(blist)
+    #print("BKG LIVETIME ESTIMATE IN SECONDS IS: " + str(livetime_estimate))
 
     #mybranches = ['eventNumber','eventTimeTank','clusterTime','SiPMhitT','SiPMhitQ','SiPMhitAmplitude','clusterChargeBalance','clusterPE','SiPM1NPulses','SiPM2NPulses','SiPMNum','clusterHits']
     mybranches = ['eventNumber','eventTimeTank','clusterTime','hitT','hitQ','hitPE','hitDetID','clusterChargeBalance','clusterPE','clusterMaxPE'    ,'clusterHits', 'SiPMhitT','SiPMhitQ','SiPMhitAmplitude','SiPM1NPulses','SiPM2NPulses','SiPMNum']
@@ -146,7 +152,7 @@ if __name__=='__main__':
         BProcessor.addROOTFile(f1,branches_to_get=mybranches)
     Bdata = BProcessor.getProcessedData()
     Bdf = pd.DataFrame(Bdata)
-
+'''
     SProcessor = rp.ROOTProcessor(treename="phaseIITriggerTree")
     for f1 in slist:
         SProcessor.addROOTFile(f1,branches_to_get=mybranches)
@@ -158,7 +164,7 @@ if __name__=='__main__':
         BProcessor.addROOTFile(f1,branches_to_get=mybranches)
     Bdata = BProcessor.getProcessedData()
     Bdf_trig = pd.DataFrame(Bdata)
-
-    PlotDemo(Sdf,Bdf,Sdf_trig,Bdf_trig)
+'''
+    PlotDemo(Sdf,Bdf) #,Sdf_trig,Bdf_trig)
 
 

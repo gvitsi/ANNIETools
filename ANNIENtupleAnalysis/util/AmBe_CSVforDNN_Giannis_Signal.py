@@ -23,9 +23,9 @@ import pylab
 pylab.rcParams['figure.figsize'] = 10, 7.6
 
 
-z=-50
-SIGNAL_DIR = f"../Data/Calibration_2021/Signal/{z}/"
-BKG_DIR = f"../Data/Calibration_2021/BKG/{z}/"
+#z=-50
+#SIGNAL_DIR = f"../Data/Calibration_2021/Signal/{z}/"
+#BKG_DIR = f"../Data/Calibration_2021/BKG/{z}/"
 
 #SIGNAL_DIR = "/Users/edrakopo/work/ANNIETools_ntuples/ANNIETools/ANNIENtupleAnalysis/Data/V3_5PE100ns/Pos0Data/"
 #BKG_DIR = "/Users/edrakopo/work/ANNIETools_ntuples/ANNIETools/ANNIENtupleAnalysis/Data/V3_5PE100ns/BkgPos0Data/"
@@ -41,8 +41,11 @@ def GetDataFrame(mytreename,mybranches,filelist):
     data = RProcessor.getProcessedData()
     df = pd.DataFrame(data)
     return df
+    
+#def noisypmt(Sdf) #,Bdf) #,Sdf_trig,Bdf_trig):
+    
 
-def PlotDemo(Sdf,Bdf,Sdf_trig,Bdf_trig): 
+def PlotDemo(Sdf): #, Bdf): #,Sdf_trig,Bdf_trig): 
     
     Sdf['label'] = '1'
     print("----- Signal------")
@@ -50,8 +53,9 @@ def PlotDemo(Sdf,Bdf,Sdf_trig,Bdf_trig):
     print("Sdf.shape: ", Sdf.shape)
     print("All columns are: ", Sdf.columns.values.tolist())
     Sdf.to_csv("vars_DNN_Signal.csv",  index=False,float_format = '%.3f')
-    #print(type(Sdf.hitDetID))
+    print(type(Sdf.hitDetID))
 
+    '''
     Bdf['label'] = '0'
     Bdf = shuffle(Bdf, random_state=0)
     print("----- Bkgd------")
@@ -61,7 +65,7 @@ def PlotDemo(Sdf,Bdf,Sdf_trig,Bdf_trig):
     Bdf.to_csv("vars_DNN_Bkgd.csv",  index=False,float_format = '%.3f')
     #print(type(Bdf.hitDetID))
     
-    data = pd.concat((Sdf,Bdf[:27645]))
+    data = pd.concat((Sdf,Bdf))
     print("----- Signal+Bkgd------")
     #data['hitDetID'].to_csv("testing.csv")
 
@@ -79,13 +83,50 @@ def PlotDemo(Sdf,Bdf,Sdf_trig,Bdf_trig):
     print("data.shape: ", data.shape)
     data.to_csv("labels_DNN_Signal_BkgdNEW.csv",  index=False,float_format = '%.3f', sep=",")   
     data.drop(['label'], axis=1).to_csv("vars_DNN_Signal_BkgdNEW.csv",header=False,index=False,float_format = '%.3f', sep=",")
+    '''   
 
+    #-------- selecting signal events with CB<0.4: --------#
+    print("Selecting signal events with CB<0.4")
+    Sdf_lowCB= Sdf.loc[Sdf['clusterChargeBalance']<0.4].reset_index(drop=True)
+    print(Sdf_lowCB.head())
+    print("Sdf_lowCB.shape: ", Sdf_lowCB.shape)
+    newdata0 = Sdf_lowCB
+    newdata0['hitDetID'] = [','.join(str(y) for y in x) for x in newdata0['hitDetID']] #dropping brackets in pd.Series
+    newdata0['hitPE'] = [','.join(str(y) for y in x) for x in newdata0['hitPE']]
+    
+    #randomly shuffle the data
+    #newdata0 = shuffle(newdata0, random_state=0)
+    print("after shuffling: ", newdata0.head())
+    print("newdata0.shape: ", newdata0.shape)
+    newdata0.to_csv("labels_DNN_Signal_lowCB.csv",  index=False,float_format = '%.3f', sep=",")
+    #newdata0.drop(['label'], axis=1).to_csv("vars_DNN_Signal_lowCB.csv", header=False, index=False, float_format = '%.3f', sep=",")
+    newdata0.to_csv("vars_DNN_Signal_lowCB.csv", header=False, index=False, float_format = '%.3f', sep=",")
+    
+    
+    
+    #------- splitting in 70% train & test, and 30% evaluate -------#
+    train_lowCB = newdata0.sample(frac=0.1)
+    print('10% of train_lowCB \n', train_lowCB.shape, '\n', train_lowCB.head(10))
+    evaluate_lowCB = newdata0.drop(train_lowCB.index)
+    
+    train_lowCB.to_csv("labels_DNN_Signal_lowCB_train.csv",  index=False,float_format = '%.3f', sep=",")
+    print('train low cb head is:\n', train_lowCB.head())
+    #train_lowCB.drop(['label'], axis=1).to_csv("vars_DNN_Signal_lowCB_train.csv", header=False, index=False, float_format = '%.3f', sep=",")
+    train_lowCB.to_csv("vars_DNN_Signal_lowCB_train.csv", header=False, index=False, float_format = '%.3f', sep=",")
+    
+    evaluate_lowCB.to_csv("labels_DNN_Signal_lowCB_evaluate.csv",  index=False,float_format = '%.3f', sep=",")
+    #evaluate_lowCB.drop(['label'], axis=1).to_csv("vars_DNN_Signal_lowCB_evaluate.csv", header=False, index=False, float_format = '%.3f', sep=",")
+    evaluate_lowCB.to_csv("vars_DNN_Signal_lowCB_evaluate.csv", header=False, index=False, float_format = '%.3f', sep=",")
+    
+
+'''
     #-------- selecting only prompt events as signal: --------#
     print("Selecting only prompt events (t<2us) as signal")
     Sdf_prompt=Sdf.loc[Sdf['clusterTime']<2000].reset_index(drop=True)
+    Bdf_prompt=Bdf.loc[Bdf['clusterTime']<2000].reset_index(drop=True)
     print(Sdf_prompt.head())
     print("Sdf_prompt.shape: ", Sdf_prompt.shape)
-    data2 = pd.concat((Sdf_prompt,Bdf[:3570]))
+    data2 = pd.concat(Sdf_prompt,Bdf_prompt)
     data2['hitDetID'] = [','.join(str(y) for y in x) for x in data2['hitDetID']]
     data2['hitPE'] = [','.join(str(y) for y in x) for x in data2['hitPE']]
     print("data2.shape: ", data2.shape)
@@ -100,9 +141,11 @@ def PlotDemo(Sdf,Bdf,Sdf_trig,Bdf_trig):
     #-------- selecting only delayed events as signal: --------#
     print("Selecting only delayed events (t>=2us) as signal")
     Sdf_del=Sdf.loc[Sdf['clusterTime']>=2000].reset_index(drop=True)
+    Bdf_del=Bdf.loc[Bdf['clusterTime']>=2000].reset_index(drop=True)
     print(Sdf_del.head())
     print("Sdf_del.shape: ", Sdf_del.shape)
-    data3 = pd.concat((Sdf_del,Bdf[:24075]))
+    data3 = pd.concat((Sdf_del,Bdf_del))
+    data3.to_csv("labels_DNN_Signal_Bkgd_delNEW_TEST_for_pmt.csv",  index=False,float_format = '%.3f', sep=",")
     data3['hitDetID'] = [','.join(str(y) for y in x) for x in data3['hitDetID']]
     data3['hitPE'] = [','.join(str(y) for y in x) for x in data3['hitPE']]
     print("data3.shape: ", data3.shape)
@@ -113,34 +156,52 @@ def PlotDemo(Sdf,Bdf,Sdf_trig,Bdf_trig):
     print("data3.shape: ", data3.shape)
     data3.to_csv("labels_DNN_Signal_Bkgd_delNEW.csv",  index=False,float_format = '%.3f', sep=",")
     data3.drop(['label'], axis=1).to_csv("vars_DNN_Signal_Bkgd_delNEW.csv",header=False,index=False,float_format = '%.3f', sep=",")
+'''
 
-    '''
+'''
     Sdf['label'] = '1'
     Bdf['label'] = '0'
     labels = pd.concat((Sdf,Bdf))
     assert(data.shape[0]==labels.shape[0])
     labels.to_csv("labels_DNN_Signal_Bkgd.csv",  index=False,float_format = '%.3f', sep=",")
-    '''
-if __name__=='__main__':
-    slist = glob.glob(SIGNAL_DIR+"*.ntuple.root")
-    blist = glob.glob(BKG_DIR+"*.ntuple.root")
+'''
 
-    livetime_estimate = es.EstimateLivetime(slist)
-    print("SIGNAL LIVETIME ESTIMATE IN SECONDS IS: " + str(livetime_estimate))
-    livetime_estimate = es.EstimateLivetime(blist)
-    print("BKG LIVETIME ESTIMATE IN SECONDS IS: " + str(livetime_estimate))
+if __name__=='__main__':
+    #slist = glob.glob(SIGNAL_DIR+"*.ntuple.root")
+    #blist = glob.glob(BKG_DIR+"*.ntuple.root")
+
+    #livetime_estimate = es.EstimateLivetime(slist)
+    #print("SIGNAL LIVETIME ESTIMATE IN SECONDS IS: " + str(livetime_estimate))
+    #livetime_estimate = es.EstimateLivetime(blist)
+    #print("BKG LIVETIME ESTIMATE IN SECONDS IS: " + str(livetime_estimate))
+
+    #SIGNAL_DIR = f"../Data/Calibration_2021/Signal/{z}/"
 
     #mybranches = ['eventNumber','eventTimeTank','clusterTime','SiPMhitT','SiPMhitQ','SiPMhitAmplitude','clusterChargeBalance','clusterPE','SiPM1NPulses','SiPM2NPulses','SiPMNum','clusterHits']
-    mybranches = ['eventNumber','eventTimeTank','clusterTime','hitT','hitQ','hitPE','hitDetID','clusterChargeBalance','clusterPE','clusterMaxPE'    ,'clusterHits', 'SiPMhitT','SiPMhitQ','SiPMhitAmplitude','SiPM1NPulses','SiPM2NPulses','SiPMNum']
+    #mybranches = ['eventNumber','eventTimeTank','clusterTime','hitT','hitQ','hitPE','hitDetID', 'clusterChargeBalance','clusterPE','clusterMaxPE','clusterHits', 'SiPMhitT','SiPMhitQ','SiPMhitAmplitude','SiPM1NPulses','SiPM2NPulses','SiPMNum']
     #mybranches = ['clusterTime','hitT','hitQ','hitPE','hitDetID','clusterChargeBalance','clusterPE','clusterMaxPE','clusterHits']
-    #mybranches = ['clusterTime','hitDetID','hitPE','clusterChargeBalance','clusterPE','clusterMaxPE','clusterHits']
-
-    SProcessor = rp.ROOTProcessor(treename="phaseIITankClusterTree")
-    for f1 in slist:
-        SProcessor.addROOTFile(f1,branches_to_get=mybranches)
-    Sdata = SProcessor.getProcessedData()
-    Sdf = pd.DataFrame(Sdata)
-
+    mybranches = ['eventNumber','eventTimeTank', 'clusterTime', 'hitDetID', 'hitPE' ,'clusterChargeBalance' ,'clusterPE','clusterMaxPE','clusterHits']
+    distances = [-100,-50, 0, 50, 100]
+    for z in distances:
+        SIGNAL_DIR = f"../Data/Calibration_2021/Signal/{z}/"
+        slist = glob.glob(SIGNAL_DIR+"*.ntuple.root")
+        SProcessor = rp.ROOTProcessor(treename="phaseIITankClusterTree")
+        for f1 in slist:
+            SProcessor.addROOTFile(f1,branches_to_get=mybranches)
+        
+        Sdata = SProcessor.getProcessedData()
+        if z == -100:
+            Sdf = pd.DataFrame(Sdata)
+            print('\nShape of dataframe for z=-100', Sdf.shape, '\n')
+        else:
+            Sdf1= pd.DataFrame(Sdata)
+            print(f'\nShape of Sdf1 for z={z}', Sdf1.shape)
+            print(f'\nShape of dataframe before z={z}', Sdf.shape)
+            Sdf = pd.concat([Sdf, Sdf1])
+            print(f'\nShape of dataframe after z={z}', Sdf.shape,'\n')
+        
+    
+    '''
     BProcessor = rp.ROOTProcessor(treename="phaseIITankClusterTree")
     for f1 in blist:
         BProcessor.addROOTFile(f1,branches_to_get=mybranches)
@@ -158,7 +219,7 @@ if __name__=='__main__':
         BProcessor.addROOTFile(f1,branches_to_get=mybranches)
     Bdata = BProcessor.getProcessedData()
     Bdf_trig = pd.DataFrame(Bdata)
-
-    PlotDemo(Sdf,Bdf,Sdf_trig,Bdf_trig)
+    '''
+    PlotDemo(Sdf) #,Bdf) #,Sdf_trig,Bdf_trig)
 
 
