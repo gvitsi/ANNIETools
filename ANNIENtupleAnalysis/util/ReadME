@@ -1,0 +1,6 @@
+The main code for the Analysis are the AmBe_Datacleaning_plots, depending on what you want to look at, there is a Signal and Background version. 
+The secondary use is Ambe_CSV for Background and Signal, that are used to produce csv files for the DNN. Each file produces CSV for their respective name,
+with some cuts , and selections inside.
+The DNN needs both Signal and Background so after you run both scripts, you need to use AmBe_CSV_combine to create a set with both types of data.
+Inside this last script, you select the size of the training and testing samples for the DNN, i used about 70k events for training and another 
+~70k for testing/evaluating
