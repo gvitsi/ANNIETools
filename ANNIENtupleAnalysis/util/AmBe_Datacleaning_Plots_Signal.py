@@ -23,7 +23,7 @@ pylab.rcParams['font.size'] = 12
 pylab.rcParams['figure.figsize'] = (10, 7.6)
 
 z=0
-SIGNAL_DIR = "../Data/Calibration_2021/Signal/{}/".format(z)
+SIGNAL_DIR = f"../Data/Calibration_2021/Signal/{z}/"
 BKG_DIR = "../Data/Calibration_2021/BKG/"
 
 #PEPERMEV = 12.
@@ -760,19 +760,19 @@ if __name__=='__main__':
         SProcessor.addROOTFile(f1,branches_to_get=mybranches)
     Sdata = SProcessor.getProcessedData()
     Sdf = pd.DataFrame(Sdata)
-
-    #BProcessor = rp.ROOTProcessor(treename="phaseIITankClusterTree")
-    #for f1 in blist:
-        #BProcessor.addROOTFile(f1,branches_to_get=mybranches)
-    #Bdata = BProcessor.getProcessedData()
-    #Bdf = pd.DataFrame(Bdata)
-
+    
     SProcessor = rp.ROOTProcessor(treename="phaseIITriggerTree")
     for f1 in slist:
         SProcessor.addROOTFile(f1,branches_to_get=mybranches)
     Sdata = SProcessor.getProcessedData()
     Sdf_trig = pd.DataFrame(Sdata)
 
+    #BProcessor = rp.ROOTProcessor(treename="phaseIITankClusterTree")
+    #for f1 in blist:
+        #BProcessor.addROOTFile(f1,branches_to_get=mybranches)
+    #Bdata = BProcessor.getProcessedData()
+    #Bdf = pd.DataFrame(Bdata)
+    
     #BProcessor = rp.ROOTProcessor(treename="phaseIITriggerTree")
     #for f1 in blist:
         #BProcessor.addROOTFile(f1,branches_to_get=mybranches)
