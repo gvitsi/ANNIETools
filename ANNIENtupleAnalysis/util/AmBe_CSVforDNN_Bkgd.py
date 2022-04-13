@@ -173,7 +173,7 @@ if __name__=='__main__':
     #mybranches = ['clusterTime','hitDetID','hitPE','clusterChargeBalance','clusterPE','clusterMaxPE','clusterHits']
 
     mybranches = ['eventNumber','eventTimeTank', 'clusterTime', 'hitDetID', 'hitPE' ,'clusterChargeBalance' ,'clusterPE','clusterMaxPE','clusterHits']
-    
+    #We use all distances(depth of AmBe Source) for the tank cluster. If we want the triggerTree just do the same for that tree
     distances = [-100,-50, 50, 100]
     for z in distances:
         BKG_DIR = f"../Data/Calibration_2021/BKG/{z}/"
