@@ -23,17 +23,6 @@ import pylab
 pylab.rcParams['figure.figsize'] = 10, 7.6
 
 
-#z=-50
-#SIGNAL_DIR = f"../Data/Calibration_2021/Signal/{z}/"
-#BKG_DIR = f"../Data/Calibration_2021/BKG/{z}/"
-
-#SIGNAL_DIR = "/Users/edrakopo/work/ANNIETools_ntuples/ANNIETools/ANNIENtupleAnalysis/Data/V3_5PE100ns/Pos0Data/"
-#BKG_DIR = "/Users/edrakopo/work/ANNIETools_ntuples/ANNIETools/ANNIENtupleAnalysis/Data/V3_5PE100ns/BkgPos0Data/"
-
-#PEPERMEV = 12.
-#expoPFlat= lambda x,C1,tau,mu,B: C1*np.exp(-(x-mu)/tau) + B
-#mypoisson = lambda x,mu: (mu**x)*np.exp(-mu)/scm.factorial(x)
-
 def GetDataFrame(mytreename,mybranches,filelist):
     RProcessor = rp.ROOTProcessor(treename=mytreename)
     for f1 in filelist:
@@ -42,7 +31,6 @@ def GetDataFrame(mytreename,mybranches,filelist):
     df = pd.DataFrame(data)
     return df
     
-#def noisypmt(Sdf,Bdf) #,Sdf_trig,Bdf_trig):
     
 
 def PlotDemo(Bdf): #,Sdf_trig,Bdf_trig): 
@@ -159,9 +147,6 @@ def PlotDemo(Bdf): #,Sdf_trig,Bdf_trig):
     labels.to_csv("labels_DNN_Signal_Bkgd.csv",  index=False,float_format = '%.3f', sep=",")
 '''
 if __name__=='__main__':
-    #slist = glob.glob(SIGNAL_DIR+"*.ntuple.root")
-    #blist = glob.glob(BKG_DIR+"*.ntuple.root")
-
     #livetime_estimate = es.EstimateLivetime(slist)
     #print("SIGNAL LIVETIME ESTIMATE IN SECONDS IS: " + str(livetime_estimate))
     #livetime_estimate = es.EstimateLivetime(blist)
