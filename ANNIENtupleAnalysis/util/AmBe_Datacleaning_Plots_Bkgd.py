@@ -27,9 +27,6 @@ z=0
 SIGNAL_DIR = "../Data/Calibration_2021/Signal/{z}/"
 BKG_DIR = f"../Data/Calibration_2021/BKG/{z}/"
 
-#PEPERMEV = 12.
-#expoPFlat= lambda x,C1,tau,mu,B: C1*np.exp(-(x-mu)/tau) + B
-#mypoisson = lambda x,mu: (mu**x)*np.exp(-mu)/scm.factorial(x)
 
 def GetDataFrame(mytreename,mybranches,filelist):
     RProcessor = rp.ROOTProcessor(treename=mytreename)
@@ -475,29 +472,29 @@ if __name__=='__main__':
     #mybranches = ['eventNumber','eventTimeTank','clusterTime','SiPMhitT','SiPMhitQ','SiPMhitAmplitude','clusterChargeBalance','clusterPE','SiPM1NPulses','SiPM2NPulses','SiPMNum','clusterHits']
     mybranches = ['eventNumber','eventTimeTank','clusterTime','hitT','hitQ','hitPE','hitDetID','clusterChargeBalance','clusterPE','clusterMaxPE','clusterHits','SiPMhitT','SiPMhitQ','SiPMhitAmplitude','SiPM1NPulses','SiPM2NPulses','SiPMNum']
 
-    #SProcessor = rp.ROOTProcessor(treename="phaseIITankClusterTree")
-    #for f1 in slist:
-     #   SProcessor.addROOTFile(f1,branches_to_get=mybranches)
-    #Sdata = SProcessor.getProcessedData()
-    #Sdf = pd.DataFrame(Sdata)
-
     BProcessor = rp.ROOTProcessor(treename="phaseIITankClusterTree")
     for f1 in blist:
         BProcessor.addROOTFile(f1,branches_to_get=mybranches)
     Bdata = BProcessor.getProcessedData()
     Bdf = pd.DataFrame(Bdata)
-
-    #SProcessor = rp.ROOTProcessor(treename="phaseIITriggerTree")
-    #for f1 in slist:
-     #   SProcessor.addROOTFile(f1,branches_to_get=mybranches)
-    #Sdata = SProcessor.getProcessedData()
-    #Sdf_trig = pd.DataFrame(Sdata)
-
+    
     BProcessor = rp.ROOTProcessor(treename="phaseIITriggerTree")
     for f1 in blist:
         BProcessor.addROOTFile(f1,branches_to_get=mybranches)
     Bdata = BProcessor.getProcessedData()
     Bdf_trig = pd.DataFrame(Bdata)
+    
+    #SProcessor = rp.ROOTProcessor(treename="phaseIITankClusterTree")
+    #for f1 in slist:
+     #   SProcessor.addROOTFile(f1,branches_to_get=mybranches)
+    #Sdata = SProcessor.getProcessedData()
+    #Sdf = pd.DataFrame(Sdata)
+    
+    #SProcessor = rp.ROOTProcessor(treename="phaseIITriggerTree")
+    #for f1 in slist:
+     #   SProcessor.addROOTFile(f1,branches_to_get=mybranches)
+    #Sdata = SProcessor.getProcessedData()
+    #Sdf_trig = pd.DataFrame(Sdata)
 
     #print("EVENT SELECTION LOSSES FOR BKG CENTRAL SOURCE RUN")
     #EventSelectionLosses(Bdf,Bdf_trig)
